@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="rounded-2xl bg-gray-950 p-6 text-white shadow-lg">
-                        <h2 class="text-lg font-black">Panel rozliczen</h2>
+                        <h2 class="text-lg font-black">Bilans grupy</h2>
 
                         <div class="mt-5 space-y-4">
                             @foreach($group->getBalances() as $data)
@@ -67,7 +67,14 @@
                                             {{ number_format($data['balance'], 2) }} PLN
                                         </span>
                                     </div>
-                                    <p class="mt-1 text-xs text-gray-400">Zaplacil: {{ number_format($data['paid'], 2) }} zl | Naleznosc: {{ number_format($data['owed'], 2) }} zl</p>
+                                    @if($data['balance'] > 0)
+                                        <p class="mt-1 text-xs text-green-300">Do odzyskania: {{ number_format($data['balance'], 2) }} PLN</p>
+                                    @elseif($data['balance'] < 0)
+                                        <p class="mt-1 text-xs text-red-300">Do oddania: {{ number_format(abs($data['balance']), 2) }} PLN</p>
+                                    @else
+                                        <p class="mt-1 text-xs text-gray-400">Rozliczony (0.00 PLN)</p>
+                                    @endif
+                                    <p class="mt-1 text-xs text-gray-400">Zaplacil lacznie: {{ number_format($data['paid'], 2) }} PLN</p>
                                 </div>
                             @endforeach
                         </div>
@@ -234,6 +241,10 @@
                                     @if($bill->items->isNotEmpty())
                                         <div class="mt-4 rounded-xl border border-indigo-100 p-4 dark:border-indigo-900">
                                             <p class="text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Pozycje z paragonu</p>
+                                            @php
+                                                $itemsTotal = (float) $bill->items->sum(fn ($item) => (float) $item->price * (int) $item->quantity);
+                                                $difference = round((float) $bill->amount - $itemsTotal, 2);
+                                            @endphp
                                             <div class="mt-2 space-y-2">
                                                 @foreach($bill->items as $item)
                                                     <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -243,6 +254,15 @@
                                                     </p>
                                                 @endforeach
                                             </div>
+                                            @if(abs($difference) > 0.009)
+                                                <p class="mt-3 rounded-lg bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-900 dark:bg-indigo-950 dark:text-indigo-200">
+                                                    @if($difference > 0)
+                                                        Brakujace {{ number_format($difference, 2) }} PLN z rachunku zostalo dodatkowo podzielone po rowno na wszystkich.
+                                                    @else
+                                                        Pozycje przekraczaja kwote rachunku o {{ number_format(abs($difference), 2) }} PLN, wiec udzialy zostaly proporcjonalnie przeskalowane do kwoty rachunku.
+                                                    @endif
+                                                </p>
+                                            @endif
                                         </div>
                                     @endif
 

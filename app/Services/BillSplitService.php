@@ -58,8 +58,16 @@ class BillSplitService
         }
 
         $billTotalCents = $this->toCents((float) $bill->amount);
-        if ($itemsTotalCents <= $billTotalCents) {
-            $rawShares[$payerId] += $billTotalCents - $itemsTotalCents;
+        if ($itemsTotalCents < $billTotalCents) {
+            $missingCents = $billTotalCents - $itemsTotalCents;
+            $missingShares = $this->distributeEvenly($missingCents, $groupUserIds);
+
+            foreach ($missingShares as $userId => $shareCents) {
+                $rawShares[$userId] += $shareCents;
+            }
+
+            $finalShares = $rawShares;
+        } elseif ($itemsTotalCents === $billTotalCents) {
             $finalShares = $rawShares;
         } else {
             $finalShares = $this->normalizeToTotal($rawShares, $billTotalCents, $itemsTotalCents, $groupUserIds);
