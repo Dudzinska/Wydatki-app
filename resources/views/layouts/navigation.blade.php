@@ -15,6 +15,10 @@
                         {{ __('Katalog grup') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('project.questions')" :active="request()->routeIs('project.questions')">
+                        {{ __('Pytania IA') }}
+                    </x-nav-link>
+
                     @auth
                         <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
                             {{ __('Moje grupy') }}
@@ -82,6 +86,10 @@
 
             <x-responsive-nav-link :href="route('public.groups.index')" :active="request()->routeIs('public.groups.*')">
                 {{ __('Katalog grup') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('project.questions')" :active="request()->routeIs('project.questions')">
+                {{ __('Pytania IA') }}
             </x-responsive-nav-link>
 
             @auth

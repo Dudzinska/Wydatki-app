@@ -1,10 +1,13 @@
+import re
 from datetime import date
+from pathlib import Path
 
 from docx import Document
 
 
 PROJECT_NAME = "BillsBuddy"
 REPO_URL = "https://github.com/Dudzinska/Wydatki-app.git"
+QUESTIONS_MD_PATH = Path("/workspace/docs/project_questions_answers.md")
 
 
 TECH_ROWS = [
@@ -112,6 +115,36 @@ def add_common_user_run_section(doc: Document) -> None:
     )
 
 
+def add_questions_answers_appendix(doc: Document) -> None:
+    add_heading(doc, "Załącznik: pytania i odpowiedzi (3.0 oraz 4.0)", level=2)
+    doc.add_paragraph(
+        "Pełna wersja odpowiedzi jest dostępna także w aplikacji pod ścieżką "
+        "„/pytania-projektowe”."
+    )
+
+    if not QUESTIONS_MD_PATH.exists():
+        doc.add_paragraph("Brak pliku źródłowego z pytaniami.")
+        return
+
+    for raw_line in QUESTIONS_MD_PATH.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        if line.startswith("# "):
+            add_heading(doc, line[2:], level=2)
+        elif line.startswith("## "):
+            add_heading(doc, line[3:], level=3)
+        elif line.startswith("### "):
+            add_heading(doc, line[4:], level=4)
+        elif line.startswith("- "):
+            doc.add_paragraph(line[2:], style="List Bullet")
+        elif re.match(r"^\d+\.\s", line):
+            doc.add_paragraph(re.sub(r"^\d+\.\s*", "", line), style="List Number")
+        else:
+            doc.add_paragraph(line)
+
+
 def build_doc_person_1(path: str) -> None:
     doc = Document()
     doc.add_heading(f"{PROJECT_NAME} – Dokumentacja projektowa (Osoba 1)", 0)
@@ -202,6 +235,8 @@ def build_doc_person_1(path: str) -> None:
             "Polityki (Policies/Gates) jako dodatkowa warstwa autoryzacji.",
         ],
     )
+
+    add_questions_answers_appendix(doc)
 
     doc.save(path)
 
@@ -298,6 +333,8 @@ def build_doc_person_2(path: str) -> None:
             "Cache dla cięższych zestawień i raportów.",
         ],
     )
+
+    add_questions_answers_appendix(doc)
 
     doc.save(path)
 
