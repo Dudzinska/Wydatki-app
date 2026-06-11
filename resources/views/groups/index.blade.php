@@ -6,9 +6,6 @@
                 <div class="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <h1 class="text-3xl font-black sm:text-4xl">Moje grupy</h1>
-                        <p class="mt-3 max-w-2xl text-sm leading-6 text-indigo-50">
-                            Grupy sa odizolowane: zwykly uzytkownik widzi tylko grupy, do ktorych nalezy. Nazwy grup nie moga sie powtarzac.
-                        </p>
                     </div>
                     <div class="rounded-2xl bg-white/15 px-5 py-4 text-sm font-bold">
                         Widoczne grupy: {{ $groups->total() }}
