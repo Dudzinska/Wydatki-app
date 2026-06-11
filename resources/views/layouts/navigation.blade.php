@@ -11,11 +11,11 @@
                         {{ __('Start') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('public.groups.index')" :active="request()->routeIs('public.groups.*')">
-                        {{ __('Katalog grup') }}
-                    </x-nav-link>
-
                     @auth
+                        <x-nav-link :href="route('public.groups.index')" :active="request()->routeIs('public.groups.*')">
+                            {{ __('Katalog grup') }}
+                        </x-nav-link>
+
                         <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
                             {{ __('Moje grupy') }}
                         </x-nav-link>
@@ -80,11 +80,11 @@
                 {{ __('Start') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('public.groups.index')" :active="request()->routeIs('public.groups.*')">
-                {{ __('Katalog grup') }}
-            </x-responsive-nav-link>
-
             @auth
+                <x-responsive-nav-link :href="route('public.groups.index')" :active="request()->routeIs('public.groups.*')">
+                    {{ __('Katalog grup') }}
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
                     {{ __('Moje grupy') }}
                 </x-responsive-nav-link>
