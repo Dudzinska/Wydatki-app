@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\Group;
+use App\Services\BillSplitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,10 @@ use Illuminate\Validation\Rule;
 
 class BillController extends Controller
 {
+    public function __construct(private readonly BillSplitService $billSplitService)
+    {
+    }
+
     public function store(Request $request, Group $group)
     {
         $this->authorizeGroupAccess($group);
@@ -31,18 +36,20 @@ class BillController extends Controller
             'payer_id.exists' => 'Platnik musi byc czlonkiem tej grupy.',
         ]);
 
-        $bill = $group->bills()->create([
-            'description' => $validated['description'],
-            'amount' => $validated['amount'],
-            'payer_id' => $validated['payer_id'],
-            'date' => now(),
-        ]);
+        DB::transaction(function () use ($group, $validated): void {
+            $bill = $group->bills()->create([
+                'description' => $validated['description'],
+                'amount' => $validated['amount'],
+                'payer_id' => $validated['payer_id'],
+                'date' => now(),
+            ]);
 
-        $this->createEqualSplits($bill, $group, (int) $validated['payer_id']);
+            $this->billSplitService->createInitialEqualSplits($bill, $group, (int) $validated['payer_id']);
 
-        if (DB::getDriverName() !== 'mysql') {
-            $group->increment('total_amount', $validated['amount']);
-        }
+            if (DB::getDriverName() !== 'mysql') {
+                $group->increment('total_amount', $validated['amount']);
+            }
+        });
 
         return back()->with('success', 'Wydatek dodany!');
     }
@@ -60,24 +67,6 @@ class BillController extends Controller
         }
 
         return back()->with('success', 'Rachunek usuniety.');
-    }
-
-    private function createEqualSplits(Bill $bill, Group $group, int $payerId): void
-    {
-        $members = $group->users;
-        if ($members->isEmpty()) {
-            return;
-        }
-
-        $share = round($bill->amount / $members->count(), 2);
-
-        foreach ($members as $member) {
-            $bill->splits()->create([
-                'user_id' => $member->id,
-                'amount' => $share,
-                'is_paid' => $member->id === $payerId,
-            ]);
-        }
     }
 
     private function authorizeGroupAccess(Group $group): void

@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\Group;
+use App\Services\BillSplitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class BillItemController extends Controller
 {
+    public function __construct(private readonly BillSplitService $billSplitService)
+    {
+    }
+
     public function store(Request $request, Group $group, Bill $bill)
     {
         $this->authorizeGroupAccess($group);
@@ -36,15 +42,19 @@ class BillItemController extends Controller
             'user_ids.*.exists' => 'Pozycje mozna przypisac tylko czlonkom tej grupy.',
         ]);
 
-        $item = $bill->items()->create([
-            'name' => $validated['name'],
-            'price' => $validated['price'],
-            'quantity' => $validated['quantity'],
-        ]);
+        DB::transaction(function () use ($bill, $group, $validated): void {
+            $item = $bill->items()->create([
+                'name' => $validated['name'],
+                'price' => $validated['price'],
+                'quantity' => $validated['quantity'],
+            ]);
 
-        $item->users()->syncWithoutDetaching($validated['user_ids']);
+            $item->users()->syncWithoutDetaching($validated['user_ids']);
 
-        return back()->with('success', 'Pozycja z paragonu dodana.');
+            $this->billSplitService->recalculateFromItems($bill, $group, (int) $bill->payer_id);
+        });
+
+        return back()->with('success', 'Pozycja z paragonu dodana. Podzial kosztu zostal automatycznie przeliczony.');
     }
 
     private function authorizeGroupAccess(Group $group): void

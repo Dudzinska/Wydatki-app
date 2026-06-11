@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\PublicGroupController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\BillItemController;
 use App\Models\Bill;
@@ -17,6 +18,9 @@ Route::get('/', function () {
         'billsCount' => Bill::count(),
     ]);
 })->name('home');
+
+Route::get('/katalog-grup', [PublicGroupController::class, 'index'])->name('public.groups.index');
+Route::get('/katalog-grup/{group}', [PublicGroupController::class, 'show'])->name('public.groups.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard', [

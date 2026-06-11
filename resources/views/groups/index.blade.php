@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div class="rounded-3xl bg-gradient-to-br from-indigo-700 to-sky-600 p-8 text-white shadow-xl">
+            <div class="glamour-hero rounded-3xl p-8 text-white shadow-xl">
                 <p class="text-sm font-bold uppercase tracking-widest text-indigo-100">Grupy rozliczeniowe</p>
                 <div class="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>

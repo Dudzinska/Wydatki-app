@@ -96,10 +96,26 @@ class GroupController extends Controller
             ->paginate(5)
             ->withQueryString();
 
+        $settlementPlan = $group->getSettlementPlan();
+        $spendingStats = [
+            'current_month' => (float) $group->bills()
+                ->whereBetween('date', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
+                ->sum('amount'),
+            'last_30_days' => (float) $group->bills()
+                ->where('date', '>=', now()->subDays(30)->toDateString())
+                ->sum('amount'),
+            'highest_bill' => (float) $group->bills()->max('amount'),
+            'avg_bill' => (float) $group->bills()->avg('amount'),
+            'active_members' => (int) $group->users()->count(),
+            'total_bills' => (int) $group->bills()->count(),
+        ];
+
         return view('groups.show', [
             'group' => $group,
             'bills' => $bills,
             'filters' => $filters,
+            'settlementPlan' => $settlementPlan,
+            'spendingStats' => $spendingStats,
         ]);
     }
 

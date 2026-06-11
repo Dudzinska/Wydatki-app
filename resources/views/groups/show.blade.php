@@ -8,7 +8,7 @@
                 <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">{{ session('error') }}</div>
             @endif
 
-            <div class="rounded-3xl bg-gradient-to-br from-indigo-700 to-sky-600 p-8 text-white shadow-xl">
+            <div class="glamour-hero rounded-3xl p-8 text-white shadow-xl">
                 <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                     <div>
                         <p class="text-sm font-bold uppercase tracking-widest text-indigo-100">Szczegoly grupy</p>
@@ -75,6 +75,50 @@
                         <div class="mt-6 rounded-xl bg-white/10 p-4 text-center">
                             <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Suma wydatkow</p>
                             <p class="mt-1 text-2xl font-black text-white">{{ number_format($group->total_amount, 2) }} PLN</p>
+                        </div>
+                    </div>
+
+                    <div class="glamour-card rounded-2xl border p-6 shadow-xl">
+                        <h2 class="text-lg font-black text-gray-900 dark:text-gray-100">Szybkie statystyki</h2>
+                        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                            <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-950">
+                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Miesiac</p>
+                                <p class="mt-1 font-black text-emerald-600 dark:text-emerald-300">{{ number_format($spendingStats['current_month'], 2) }} PLN</p>
+                            </div>
+                            <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-950">
+                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Ostatnie 30 dni</p>
+                                <p class="mt-1 font-black text-emerald-600 dark:text-emerald-300">{{ number_format($spendingStats['last_30_days'], 2) }} PLN</p>
+                            </div>
+                            <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-950">
+                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Najwiekszy wydatek</p>
+                                <p class="mt-1 font-black text-slate-900 dark:text-slate-100">{{ number_format($spendingStats['highest_bill'], 2) }} PLN</p>
+                            </div>
+                            <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-950">
+                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Srednia</p>
+                                <p class="mt-1 font-black text-slate-900 dark:text-slate-100">{{ number_format($spendingStats['avg_bill'], 2) }} PLN</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glamour-card rounded-2xl border p-6 shadow-xl">
+                        <h2 class="text-lg font-black text-gray-900 dark:text-gray-100">Propozycje splat</h2>
+                        <p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
+                            Algorytm minimalizuje liczbe przelewow miedzy osobami z debetem i nadplata.
+                        </p>
+                        <div class="mt-4 space-y-3">
+                            @forelse($settlementPlan as $transfer)
+                                <div class="rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-950">
+                                    <span class="font-black text-slate-900 dark:text-slate-100">{{ $transfer['from']->name }}</span>
+                                    <span class="text-slate-600 dark:text-slate-300">powinien przelac</span>
+                                    <span class="font-black text-fuchsia-700 dark:text-fuchsia-300">{{ number_format($transfer['amount'], 2) }} PLN</span>
+                                    <span class="text-slate-600 dark:text-slate-300">do</span>
+                                    <span class="font-black text-slate-900 dark:text-slate-100">{{ $transfer['to']->name }}</span>.
+                                </div>
+                            @empty
+                                <p class="rounded-xl bg-emerald-50 p-3 text-sm font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
+                                    Brak koniecznych przelewow - grupa jest rozliczona.
+                                </p>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -196,6 +240,9 @@
                                     @endphp
                                     <details class="mt-4 rounded-xl border border-gray-200 p-4 dark:border-gray-800" @if($isOldBillItem) open @endif>
                                         <summary class="cursor-pointer text-sm font-black text-indigo-700 dark:text-indigo-300">Dodaj pozycje z paragonu</summary>
+                                        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                                            Po zapisaniu pozycji system automatycznie przeliczy podzial kosztu tego rachunku.
+                                        </p>
                                         <form action="{{ route('bill-items.store', [$group, $bill]) }}" method="POST" class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                                             @csrf
                                             <input type="hidden" name="bill_item_bill_id" value="{{ $bill->id }}">

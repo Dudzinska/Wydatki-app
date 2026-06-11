@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class Group extends Model
 {
@@ -27,38 +27,103 @@ class Group extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    /**
-     * Algorytm bilansowania: zaplacone - naleznosci (bill_splits).
-     * Na MySQL korzysta z funkcji skladowej get_user_net_balance().
-     */
-    public function getBalances()
+    public function getBalances(): array
     {
-        $members = $this->users;
-        $balances = [];
+        return $this->getBalanceCollection()->all();
+    }
 
-        foreach ($members as $user) {
-            $paid = $this->bills->where('payer_id', $user->id)->sum('amount');
-            $owed = BillSplit::whereIn('bill_id', $this->bills->pluck('id'))
-                ->where('user_id', $user->id)
-                ->sum('amount');
+    public function getSettlementPlan(): array
+    {
+        $balances = $this->getBalanceCollection();
 
-            if (DB::getDriverName() === 'mysql') {
-                $balance = (float) DB::selectOne(
-                    'SELECT get_user_net_balance(?, ?) AS balance',
-                    [$user->id, $this->id]
-                )->balance;
-            } else {
-                $balance = $paid - $owed;
+        $creditors = $balances
+            ->filter(fn (array $entry): bool => $entry['balance'] > 0.01)
+            ->map(fn (array $entry): array => [
+                'user' => $entry['user'],
+                'amount_cents' => (int) round($entry['balance'] * 100),
+            ])
+            ->sortByDesc('amount_cents')
+            ->values()
+            ->all();
+
+        $debtors = $balances
+            ->filter(fn (array $entry): bool => $entry['balance'] < -0.01)
+            ->map(fn (array $entry): array => [
+                'user' => $entry['user'],
+                'amount_cents' => (int) round(abs($entry['balance']) * 100),
+            ])
+            ->sortByDesc('amount_cents')
+            ->values()
+            ->all();
+
+        $settlements = [];
+        $creditorIndex = 0;
+        $debtorIndex = 0;
+
+        while (isset($creditors[$creditorIndex], $debtors[$debtorIndex])) {
+            $transferCents = min(
+                $creditors[$creditorIndex]['amount_cents'],
+                $debtors[$debtorIndex]['amount_cents']
+            );
+
+            if ($transferCents <= 0) {
+                break;
             }
 
-            $balances[] = [
+            $settlements[] = [
+                'from' => $debtors[$debtorIndex]['user'],
+                'to' => $creditors[$creditorIndex]['user'],
+                'amount' => round($transferCents / 100, 2),
+            ];
+
+            $creditors[$creditorIndex]['amount_cents'] -= $transferCents;
+            $debtors[$debtorIndex]['amount_cents'] -= $transferCents;
+
+            if ($creditors[$creditorIndex]['amount_cents'] === 0) {
+                $creditorIndex++;
+            }
+
+            if ($debtors[$debtorIndex]['amount_cents'] === 0) {
+                $debtorIndex++;
+            }
+        }
+
+        return $settlements;
+    }
+
+    private function getBalanceCollection(): Collection
+    {
+        $members = $this->users()->get();
+        if ($members->isEmpty()) {
+            return collect();
+        }
+
+        $bills = $this->bills()->get(['id', 'payer_id', 'amount']);
+        $billIds = $bills->pluck('id');
+
+        $paidByUser = $bills
+            ->groupBy('payer_id')
+            ->map(fn (Collection $userBills): float => (float) $userBills->sum('amount'));
+
+        $owedByUser = $billIds->isEmpty()
+            ? collect()
+            : BillSplit::query()
+                ->selectRaw('user_id, SUM(amount) as owed')
+                ->whereIn('bill_id', $billIds)
+                ->groupBy('user_id')
+                ->pluck('owed', 'user_id')
+                ->map(fn ($amount): float => (float) $amount);
+
+        return $members->map(function (User $user) use ($paidByUser, $owedByUser): array {
+            $paid = (float) ($paidByUser[$user->id] ?? 0);
+            $owed = (float) ($owedByUser[$user->id] ?? 0);
+
+            return [
                 'user' => $user,
                 'paid' => $paid,
                 'owed' => $owed,
-                'balance' => $balance,
+                'balance' => round($paid - $owed, 2),
             ];
-        }
-
-        return $balances;
+        });
     }
 }

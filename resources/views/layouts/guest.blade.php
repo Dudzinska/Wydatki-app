@@ -17,7 +17,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased dark:text-gray-100">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-16 sm:pt-0 bg-gray-100 transition-colors dark:bg-gray-950">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-16 sm:pt-0 bg-transparent transition-colors">
             <div class="absolute right-4 top-4">
                 <x-theme-toggle />
             </div>
@@ -28,7 +28,7 @@
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden transition-colors sm:rounded-lg dark:bg-gray-900 dark:shadow-gray-950">
+            <div class="glamour-card w-full sm:max-w-md mt-6 overflow-hidden px-6 py-4 transition-colors sm:rounded-lg">
                 {{ $slot }}
             </div>
         </div>
