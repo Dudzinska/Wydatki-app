@@ -12,6 +12,13 @@ QUESTIONS_PAGE = "/pytania-projektowe"
 LOGO_PATH = Path("/workspace/docs/logo_ur.png")
 PERSON_1_NAME = "Oliwia Kwasek"
 PERSON_2_NAME = "Klaudia Dudzińska"
+SCREENSHOT_DIR = Path("/workspace/docs/screenshots")
+SHOT_DASHBOARD = SCREENSHOT_DIR / "screen_01_dashboard.png"
+SHOT_GROUPS = SCREENSHOT_DIR / "screen_02_groups_crud.png"
+SHOT_ADMIN = SCREENSHOT_DIR / "screen_03_admin_panel.png"
+SHOT_SETTLEMENT = SCREENSHOT_DIR / "screen_04_settlement.png"
+SHOT_PUBLIC = SCREENSHOT_DIR / "screen_05_public_catalog.png"
+SHOT_MOBILE = SCREENSHOT_DIR / "screen_06_mobile_view.png"
 
 TECH_ROWS = [
     ("PHP", "8.2.x", "https://www.php.net/"),
@@ -86,6 +93,16 @@ def add_tech_table(doc: Document) -> None:
         row[0].text = tech
         row[1].text = version
         row[2].text = link
+
+
+def add_figure(doc: Document, image_path: Path, caption: str, width_inches: float = 6.2) -> None:
+    if image_path.exists():
+        doc.add_picture(str(image_path), width=Inches(width_inches))
+        cap = doc.add_paragraph(caption)
+        cap.alignment = 1
+        cap.runs[0].italic = True
+    else:
+        doc.add_paragraph(f"[Brak obrazu: {image_path.name}] {caption}")
 
 
 def add_common_intro(doc: Document) -> None:
@@ -200,14 +217,21 @@ def add_manual_common(doc: Document) -> None:
     )
 
     add_heading(doc, "Responsywność i zrzuty ekranu", level=2)
-    add_bullets(
+    add_figure(
         doc,
-        [
-            "Rysunek 1: Dashboard na desktopie.",
-            "Rysunek 2: Formularz CRUD na desktopie.",
-            "Rysunek 3: Widok mobilny menu i listy danych.",
-            "Każdy zrzut powinien mieć podpis: co przedstawia i jaki krok procesu dokumentuje.",
-        ],
+        SHOT_DASHBOARD,
+        "Rysunek 1. Dashboard aplikacji BillsBuddy (widok desktop) — podsumowanie danych i wejście do głównych funkcji.",
+    )
+    add_figure(
+        doc,
+        SHOT_GROUPS,
+        "Rysunek 2. CRUD grup (widok desktop) — tworzenie, filtrowanie, edycja i usuwanie zasobów.",
+    )
+    add_figure(
+        doc,
+        SHOT_MOBILE,
+        "Rysunek 3. Widok responsywny (mobile) — menu i sekcje dopasowane do mniejszych ekranów.",
+        width_inches=3.2,
     )
 
 
@@ -258,6 +282,11 @@ def add_crud_admin_section(doc: Document) -> None:
             "Autoryzacja serwerowa zabezpiecza usuwanie tylko dla uprawnionych.",
         ],
     )
+    add_figure(
+        doc,
+        SHOT_ADMIN,
+        "Rysunek 4. Panel administratora — zarządzanie profilami użytkowników, rolami i uprawnieniami.",
+    )
 
 
 def add_user_management_40(doc: Document) -> None:
@@ -306,6 +335,16 @@ def add_main_mechanism(doc: Document) -> None:
         "Po dodaniu rachunku i pozycji z paragonu system automatycznie oblicza udziały "
         "członków grupy, aktualizuje bilans i generuje listę spłat „kto komu i ile oddaje”. "
         "Dodatkowo obsługuje sytuację, gdy suma pozycji paragonu jest różna od kwoty rachunku."
+    )
+    add_figure(
+        doc,
+        SHOT_SETTLEMENT,
+        "Rysunek 5. Mechanizm rozliczeń — bilans grupy, historia rachunków i komunikaty „kto komu i ile oddaje”.",
+    )
+    add_figure(
+        doc,
+        SHOT_PUBLIC,
+        "Rysunek 6. Katalog publiczny (read-only) dla użytkownika niezalogowanego.",
     )
 
 
