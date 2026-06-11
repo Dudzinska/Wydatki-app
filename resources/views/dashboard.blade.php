@@ -46,15 +46,7 @@
                 </article>
             </section>
 
-            <section class="grid gap-6 lg:grid-cols-2">
-                <article class="glamour-card rounded-2xl border p-6">
-                    <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Nowe funkcje 5.0</h2>
-                    <ul class="mt-4 space-y-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        <li>Publiczny katalog grup dla niezalogowanych (read-only).</li>
-                        <li>Automatyczne przeliczanie podzialu kosztow po pozycjach paragonu.</li>
-                        <li>Propozycje minimalnej liczby przelewow do zamkniecia sald.</li>
-                    </ul>
-                </article>
+            <section class="grid gap-6">
                 <article class="glamour-card rounded-2xl border p-6">
                     <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Szybki start</h2>
                     <ol class="mt-4 space-y-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
