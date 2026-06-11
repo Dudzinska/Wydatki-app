@@ -4,7 +4,6 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\PublicGroupController;
-use App\Http\Controllers\ProjectQuestionsController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\BillItemController;
 use App\Models\Bill;
@@ -22,7 +21,6 @@ Route::get('/', function () {
 
 Route::get('/katalog-grup', [PublicGroupController::class, 'index'])->name('public.groups.index');
 Route::get('/katalog-grup/{group}', [PublicGroupController::class, 'show'])->name('public.groups.show');
-Route::get('/pytania-projektowe', [ProjectQuestionsController::class, 'index'])->name('project.questions');
 
 Route::get('/dashboard', function () {
     return view('dashboard', [
