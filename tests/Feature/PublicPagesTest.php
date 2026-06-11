@@ -23,6 +23,12 @@ class PublicPagesTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
+    public function test_project_questions_page_is_removed(): void
+    {
+        $this->get('/pytania-projektowe')
+            ->assertNotFound();
+    }
+
     public function test_regular_user_does_not_see_admin_link(): void
     {
         $user = User::factory()->create(['role' => 'user']);
