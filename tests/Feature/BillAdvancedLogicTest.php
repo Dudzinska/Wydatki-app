@@ -32,8 +32,8 @@ class BillAdvancedLogicTest extends TestCase
             ])->assertRedirect();
 
         $bill = Bill::firstOrFail();
-        $this->assertEquals(0.0, (float) $bill->splits()->where('user_id', $friend->id)->value('amount'));
-        $this->assertEquals(100.0, (float) $bill->splits()->where('user_id', $owner->id)->value('amount'));
+        $this->assertEquals(50.0, (float) $bill->splits()->where('user_id', $friend->id)->value('amount'));
+        $this->assertEquals(50.0, (float) $bill->splits()->where('user_id', $owner->id)->value('amount'));
 
         $this->actingAs($owner)
             ->post(route('bill-items.store', [$group, $bill]), [
@@ -124,5 +124,28 @@ class BillAdvancedLogicTest extends TestCase
 
         $this->assertEquals(117.0, $friendShare);
         $this->assertEquals(117.0, $ownerShare);
+    }
+
+    public function test_bill_without_items_is_split_equally_between_members(): void
+    {
+        $payer = User::factory()->create();
+        $member = User::factory()->create();
+
+        $group = Group::create([
+            'name' => 'Weekend',
+            'owner_id' => $payer->id,
+        ]);
+        $group->users()->attach([$payer->id, $member->id]);
+
+        $this->actingAs($payer)->post(route('bills.store', $group), [
+            'description' => 'Nocleg',
+            'amount' => 800,
+            'payer_id' => $payer->id,
+        ])->assertRedirect();
+
+        $bill = Bill::firstOrFail();
+
+        $this->assertEquals(400.0, (float) $bill->splits()->where('user_id', $payer->id)->value('amount'));
+        $this->assertEquals(400.0, (float) $bill->splits()->where('user_id', $member->id)->value('amount'));
     }
 }
