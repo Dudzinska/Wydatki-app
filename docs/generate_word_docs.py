@@ -10,6 +10,8 @@ REPO_URL = "https://github.com/Dudzinska/Wydatki-app.git"
 APP_URL_LOCAL = "http://127.0.0.1:8000"
 QUESTIONS_PAGE = "/pytania-projektowe"
 LOGO_PATH = Path("/workspace/docs/logo_ur.png")
+PERSON_1_NAME = "Oliwia Kwasek"
+PERSON_2_NAME = "Klaudia Dudzińska"
 
 TECH_ROWS = [
     ("PHP", "8.2.x", "https://www.php.net/"),
@@ -334,8 +336,10 @@ def build_doc_person_1(path: Path) -> None:
     add_title_page(
         doc,
         subtitle="Dokumentacja wdrożeniowa i administracyjna",
-        author_label="Osoba 1 – część administracyjna i uprawnienia",
+        author_label=f"{PERSON_1_NAME} – część administracyjna i uprawnienia",
     )
+
+    add_heading(doc, f"Autor dokumentacji: {PERSON_1_NAME}", level=2)
 
     add_common_intro(doc)
     add_developer_runbook(doc)
@@ -357,8 +361,10 @@ def build_doc_person_2(path: Path) -> None:
     add_title_page(
         doc,
         subtitle="Dokumentacja użytkownika i logiki biznesowej",
-        author_label="Osoba 2 – mechanizmy rozliczeń i user flow",
+        author_label=f"{PERSON_2_NAME} – mechanizmy rozliczeń i user flow",
     )
+
+    add_heading(doc, f"Autor dokumentacji: {PERSON_2_NAME}", level=2)
 
     add_common_intro(doc)
     add_developer_runbook(doc)
