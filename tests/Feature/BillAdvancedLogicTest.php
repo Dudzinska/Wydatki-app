@@ -92,4 +92,37 @@ class BillAdvancedLogicTest extends TestCase
         $this->assertEquals(30.00, $plan[0]['amount']);
         $this->assertEquals(30.00, $plan[1]['amount']);
     }
+
+    public function test_missing_bill_amount_is_split_equally_between_members(): void
+    {
+        $owner = User::factory()->create();
+        $friend = User::factory()->create();
+
+        $group = Group::create([
+            'name' => 'Kolacja',
+            'owner_id' => $owner->id,
+        ]);
+        $group->users()->attach([$owner->id, $friend->id]);
+
+        $this->actingAs($owner)->post(route('bills.store', $group), [
+            'description' => 'Kolacja',
+            'amount' => 234,
+            'payer_id' => $owner->id,
+        ])->assertRedirect();
+
+        $bill = Bill::firstOrFail();
+
+        $this->actingAs($owner)->post(route('bill-items.store', [$group, $bill]), [
+            'bill_item_bill_id' => $bill->id,
+            'name' => 'Desery',
+            'price' => 60,
+            'quantity' => 2,
+        ])->assertRedirect();
+
+        $friendShare = (float) $bill->splits()->where('user_id', $friend->id)->value('amount');
+        $ownerShare = (float) $bill->splits()->where('user_id', $owner->id)->value('amount');
+
+        $this->assertEquals(117.0, $friendShare);
+        $this->assertEquals(117.0, $ownerShare);
+    }
 }
