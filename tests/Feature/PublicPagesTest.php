@@ -17,11 +17,10 @@ class PublicPagesTest extends TestCase
             ->assertSee('Rozliczaj wydatki w grupie prosto i przejrzyście.');
     }
 
-    public function test_dashboard_is_visible_without_login(): void
+    public function test_dashboard_requires_login(): void
     {
         $this->get('/dashboard')
-            ->assertOk()
-            ->assertSee('Zarządzaj grupami i wspólnymi rachunkami.');
+            ->assertRedirect(route('login'));
     }
 
     public function test_regular_user_does_not_see_admin_link(): void

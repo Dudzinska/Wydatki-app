@@ -22,11 +22,11 @@
                     </a>
 
                     <div class="flex flex-wrap items-center gap-3">
-                        <a href="{{ route('public.groups.index') }}" class="rounded-lg border border-fuchsia-200 px-4 py-2 text-sm font-bold text-fuchsia-700 hover:bg-fuchsia-50 dark:border-fuchsia-900 dark:text-fuchsia-300 dark:hover:bg-fuchsia-950/40">
-                            Katalog grup
-                        </a>
                         <x-theme-toggle />
                         @auth
+                            <a href="{{ route('public.groups.index') }}" class="rounded-lg border border-fuchsia-200 px-4 py-2 text-sm font-bold text-fuchsia-700 hover:bg-fuchsia-50 dark:border-fuchsia-900 dark:text-fuchsia-300 dark:hover:bg-fuchsia-950/40">
+                                Katalog grup
+                            </a>
                             <a href="{{ route('groups.index') }}" class="rounded-lg bg-fuchsia-600 px-4 py-2 text-sm font-bold text-white hover:bg-fuchsia-700">
                                 Moje grupy
                             </a>
@@ -51,7 +51,7 @@
                         Rozliczaj wydatki w grupie prosto i przejrzyście.
                     </h1>
                     <p class="mt-5 max-w-2xl text-base leading-7 text-fuchsia-50/95">
-                        Tworz grupy, dodawaj uczestnikow, zapisuj rachunki, analizuj salda i korzystaj z automatycznych propozycji splat.
+                        Tworz grupy, dodawaj uczestnikow, zapisuj rachunki i sprawdzaj salda po zalogowaniu.
                     </p>
                     <div class="mt-7 flex flex-col gap-3 sm:flex-row">
                         @auth
@@ -86,26 +86,6 @@
                     </article>
                 </section>
 
-                <section class="grid gap-6 lg:grid-cols-3">
-                    <div class="glamour-card rounded-2xl border p-6">
-                        <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Publiczny podglad</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                            Niezalogowani uzytkownicy moga przegladac katalog grup oraz ich statystyki, ale nie moga niczego edytowac.
-                        </p>
-                    </div>
-                    <div class="glamour-card rounded-2xl border p-6">
-                        <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Zaawansowana logika</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                            System proponuje minimalna liczbe przelewow potrzebnych do zamkniecia sald miedzy czlonkami grupy.
-                        </p>
-                    </div>
-                    <div class="glamour-card rounded-2xl border p-6">
-                        <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Precyzyjny podzial kosztow</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                            Pozycje z paragonu sa automatycznie dzielone po rowno na wszystkich czlonkow grupy.
-                        </p>
-                    </div>
-                </section>
             </main>
         </div>
     </body>

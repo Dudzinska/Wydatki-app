@@ -4,7 +4,7 @@
             <section class="glamour-hero rounded-3xl p-8 text-white shadow-2xl">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-sm font-bold uppercase tracking-[0.22em] text-fuchsia-100">Podglad publiczny</p>
+                        <p class="text-sm font-bold uppercase tracking-[0.22em] text-fuchsia-100">Podglad grupy</p>
                         <h1 class="mt-4 text-3xl font-black sm:text-4xl">{{ $group->name }}</h1>
                         <p class="mt-4 max-w-3xl text-sm leading-7 text-fuchsia-50/95">{{ $group->description ?: 'Brak opisu grupy.' }}</p>
                     </div>

@@ -2,11 +2,10 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
             <section class="glamour-hero rounded-3xl p-8 text-white shadow-2xl">
-                <p class="text-sm font-bold uppercase tracking-[0.22em] text-fuchsia-100">Katalog publiczny</p>
-                <h1 class="mt-4 text-3xl font-black sm:text-4xl">Przegladaj grupy bez logowania</h1>
+                <p class="text-sm font-bold uppercase tracking-[0.22em] text-fuchsia-100">Katalog grup</p>
+                <h1 class="mt-4 text-3xl font-black sm:text-4xl">Przegladaj grupy</h1>
                 <p class="mt-4 max-w-3xl text-sm leading-7 text-fuchsia-50/95">
-                    Te zasoby sa dostepne publicznie tylko do odczytu. Edycja, usuwanie i dodawanie danych nadal wymaga
-                    konta oraz odpowiednich uprawnien.
+                    Dostep do danych grup i wydatkow wymaga zalogowania.
                 </p>
             </section>
 
@@ -53,7 +52,7 @@
                         <div class="flex items-start justify-between gap-4">
                             <h3 class="text-xl font-black text-slate-900 dark:text-slate-100">{{ $group->name }}</h3>
                             <span class="rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-black uppercase tracking-wide text-fuchsia-700 dark:bg-fuchsia-950 dark:text-fuchsia-200">
-                                Publiczne
+                                Zalogowany
                             </span>
                         </div>
                         <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">

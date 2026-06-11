@@ -13,21 +13,15 @@
                     Zarządzaj grupami i wspólnymi rachunkami.
                 </h1>
                 <p class="mt-5 max-w-3xl text-base leading-relaxed text-fuchsia-50/95">
-                    Dodawaj wydatki, przypisuj je do osob i sprawdzaj salda w grupach. Motyw glamour poprawia czytelnosc panelu.
+                    Dodawaj wydatki, przypisuj je do osob i sprawdzaj salda w grupach.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    @auth
-                        <a href="{{ route('groups.index') }}" class="rounded-xl bg-white px-6 py-3 text-sm font-black text-fuchsia-700 hover:bg-fuchsia-50">
-                            Moje grupy
-                        </a>
-                        <a href="{{ route('public.groups.index') }}" class="rounded-xl border border-white/80 px-6 py-3 text-sm font-black text-white hover:bg-white/10">
-                            Katalog grup
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="rounded-xl bg-white px-6 py-3 text-sm font-black text-fuchsia-700 hover:bg-fuchsia-50">
-                            Zaloguj sie
-                        </a>
-                    @endauth
+                    <a href="{{ route('groups.index') }}" class="rounded-xl bg-white px-6 py-3 text-sm font-black text-fuchsia-700 hover:bg-fuchsia-50">
+                        Moje grupy
+                    </a>
+                    <a href="{{ route('public.groups.index') }}" class="rounded-xl border border-white/80 px-6 py-3 text-sm font-black text-white hover:bg-white/10">
+                        Katalog grup
+                    </a>
                 </div>
             </section>
 
@@ -46,17 +40,6 @@
                 </article>
             </section>
 
-            <section class="grid gap-6">
-                <article class="glamour-card rounded-2xl border p-6">
-                    <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Szybki start</h2>
-                    <ol class="mt-4 space-y-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        <li><span class="font-black text-fuchsia-700 dark:text-fuchsia-300">1.</span> Utworz grupe rozliczeniowa.</li>
-                        <li><span class="font-black text-fuchsia-700 dark:text-fuchsia-300">2.</span> Dodaj uczestnikow i wydatki.</li>
-                        <li><span class="font-black text-fuchsia-700 dark:text-fuchsia-300">3.</span> Dodaj pozycje paragonu dla precyzyjnego podzialu.</li>
-                        <li><span class="font-black text-fuchsia-700 dark:text-fuchsia-300">4.</span> Skorzystaj z gotowego planu przelewow.</li>
-                    </ol>
-                </article>
-            </section>
         </div>
     </div>
 </x-app-layout>
