@@ -21,7 +21,16 @@ class BillController extends Controller
         $this->authorizeGroupAccess($group);
 
         $validated = $request->validate([
-            'description' => ['required', 'string', 'max:255'],
+            'description' => [
+                'required',
+                'string',
+                'max:255',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (preg_match('/^\d+$/', trim((string) $value))) {
+                        $fail('Nazwa wydatku nie moze skladac sie z samych cyfr.');
+                    }
+                },
+            ],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'payer_id' => [
                 'required',

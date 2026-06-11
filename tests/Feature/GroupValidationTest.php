@@ -68,4 +68,24 @@ class GroupValidationTest extends TestCase
 
         $this->assertDatabaseCount('bills', 0);
     }
+
+    public function test_expense_name_cannot_be_only_digits(): void
+    {
+        $user = User::factory()->create();
+        $group = Group::create([
+            'name' => 'Cyfry',
+            'owner_id' => $user->id,
+        ]);
+        $group->users()->attach($user->id);
+
+        $this->actingAs($user)
+            ->from(route('groups.show', $group))
+            ->post(route('bills.store', $group), [
+                'description' => '12345',
+                'amount' => 10,
+                'payer_id' => $user->id,
+            ])
+            ->assertRedirect(route('groups.show', $group))
+            ->assertSessionHasErrors(['description']);
+    }
 }
