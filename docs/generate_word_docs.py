@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from pathlib import Path
 
@@ -9,7 +10,10 @@ PROJECT_NAME = "BillsBuddy"
 REPO_URL = "https://github.com/Dudzinska/Wydatki-app.git"
 APP_URL_LOCAL = "http://127.0.0.1:8000"
 QUESTIONS_PAGE = "/pytania-projektowe"
-LOGO_PATH = Path("/workspace/docs/logo_ur.png")
+QUESTIONS_MD_PATH = Path("/workspace/docs/project_questions_answers.md")
+LOGO_PRIMARY = Path("/workspace/docs/logo_ur_official.png")
+LOGO_FALLBACK = Path("/workspace/docs/logo_ur.png")
+LOGO_SOURCE_URL = "https://www.ur.edu.pl/pl/uniwersytet/aktualnosci/logo-uniwersytetu-rzeszowskiego,20638"
 PERSON_1_NAME = "Oliwia Kwasek"
 PERSON_2_NAME = "Klaudia Dudzińska"
 SCREENSHOT_DIR = Path("/workspace/docs/screenshots")
@@ -39,9 +43,18 @@ def set_default_font(document: Document) -> None:
     style.font.size = Pt(11)
 
 
+def get_logo_path() -> Path | None:
+    if LOGO_PRIMARY.exists():
+        return LOGO_PRIMARY
+    if LOGO_FALLBACK.exists():
+        return LOGO_FALLBACK
+    return None
+
+
 def add_title_page(doc: Document, subtitle: str, author_label: str) -> None:
-    if LOGO_PATH.exists():
-        doc.add_picture(str(LOGO_PATH), width=Inches(5.8))
+    logo = get_logo_path()
+    if logo:
+        doc.add_picture(str(logo), width=Inches(5.8))
 
     doc.add_paragraph()
     title = doc.add_heading("DOKUMENTACJA PROJEKTOWA", level=0)
@@ -62,6 +75,11 @@ def add_title_page(doc: Document, subtitle: str, author_label: str) -> None:
     info.add_run("Kierunek: Informatyka\n")
     info.add_run("Przedmiot: Aplikacje Internetowe")
     info.alignment = 1
+
+    source = doc.add_paragraph(f"Logo UR — źródło: {LOGO_SOURCE_URL}")
+    source.alignment = 1
+    source.runs[0].italic = True
+    source.runs[0].font.size = Pt(9)
 
     doc.add_page_break()
 
@@ -103,6 +121,18 @@ def add_figure(doc: Document, image_path: Path, caption: str, width_inches: floa
         cap.runs[0].italic = True
     else:
         doc.add_paragraph(f"[Brak obrazu: {image_path.name}] {caption}")
+
+
+def add_requirements_mapping(doc: Document) -> None:
+    add_heading(doc, "Mapa spełnienia wymagań IA", level=1)
+    add_bullets(
+        doc,
+        [
+            "Ocena 3.0: CRUD zasobów + walidacje + relacje + panel administratora.",
+            "Ocena 4.0: role i uprawnienia, zarządzanie zasobami, zarządzanie profilami przez administratora, dostęp read-only dla niezalogowanego.",
+            "Ocena 5.0: logika biznesowa rozliczeń (bilans i plan spłat) oraz funkcje ponad prosty CRUD.",
+        ],
+    )
 
 
 def add_common_intro(doc: Document) -> None:
@@ -251,6 +281,7 @@ def add_crud_admin_section(doc: Document) -> None:
             "Walidacja frontend: required, number, min, step, typy pól HTML.",
             "Walidacja backend: required/string/max, numeric/min, weryfikacja płatnika jako członka grupy.",
             "Formularz odwzorowuje relację: płatnik wybierany z listy członków, bez ręcznego wpisywania ID.",
+            "Formularz jest podzielony logicznie na sekcje, aby prowadzić użytkownika krok po kroku.",
         ],
     )
 
@@ -261,6 +292,7 @@ def add_crud_admin_section(doc: Document) -> None:
             "Lista rachunków ma filtrowanie: tekst, płatnik, zakres kwot.",
             "Sortowanie i paginacja upraszczają pracę na większym zbiorze danych.",
             "Filtry pokrywają realne scenariusze przeglądania historii rozliczeń.",
+            "Podejście analogiczne do zaawansowanych filtrów marketplace: użytkownik nie przegląda ręcznie całej listy.",
         ],
     )
 
@@ -270,6 +302,7 @@ def add_crud_admin_section(doc: Document) -> None:
         [
             "Edycja grup i profili ma walidację po stronie klienta i serwera.",
             "Dane po błędzie walidacji wracają do formularza (old input + komunikaty błędów).",
+            "Dostęp do edycji jest kontrolowany autoryzacją właściciel/admin.",
         ],
     )
 
@@ -280,6 +313,7 @@ def add_crud_admin_section(doc: Document) -> None:
             "Usuwanie rachunku/grupy realizowane przez dedykowany formularz z metodą DELETE.",
             "Przed usunięciem występuje potwierdzenie akcji w interfejsie.",
             "Autoryzacja serwerowa zabezpiecza usuwanie tylko dla uprawnionych.",
+            "Usunięcie jest wykonywane przez kontroler po walidacji kontekstu zasobu.",
         ],
     )
     add_figure(
@@ -369,6 +403,31 @@ def add_questions_reference(doc: Document) -> None:
     )
 
 
+def add_questions_answers_appendix(doc: Document) -> None:
+    add_heading(doc, "Załącznik: pełne odpowiedzi na pytania 3.0 i 4.0", level=1)
+    if not QUESTIONS_MD_PATH.exists():
+        doc.add_paragraph("Brak pliku z odpowiedziami.")
+        return
+
+    for raw in QUESTIONS_MD_PATH.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+
+        if line.startswith("# "):
+            add_heading(doc, line[2:], level=2)
+        elif line.startswith("## "):
+            add_heading(doc, line[3:], level=3)
+        elif line.startswith("### "):
+            add_heading(doc, line[4:], level=4)
+        elif line.startswith("- "):
+            doc.add_paragraph(line[2:], style="List Bullet")
+        elif re.match(r"^\d+\.\s", line):
+            doc.add_paragraph(re.sub(r"^\d+\.\s*", "", line), style="List Number")
+        else:
+            doc.add_paragraph(line)
+
+
 def build_doc_person_1(path: Path) -> None:
     doc = Document()
     set_default_font(doc)
@@ -379,8 +438,10 @@ def build_doc_person_1(path: Path) -> None:
     )
 
     add_heading(doc, f"Autor dokumentacji: {PERSON_1_NAME}", level=2)
+    add_heading(doc, "Instrukcja uruchomienia projektu", level=1)
 
     add_common_intro(doc)
+    add_requirements_mapping(doc)
     add_developer_runbook(doc)
     add_user_runbook(doc)
     add_manual_common(doc)
@@ -391,6 +452,7 @@ def build_doc_person_1(path: Path) -> None:
     add_main_mechanism(doc)
     add_plans(doc)
     add_questions_reference(doc)
+    add_questions_answers_appendix(doc)
     doc.save(path)
 
 
@@ -404,8 +466,10 @@ def build_doc_person_2(path: Path) -> None:
     )
 
     add_heading(doc, f"Autor dokumentacji: {PERSON_2_NAME}", level=2)
+    add_heading(doc, "Instrukcja uruchomienia projektu", level=1)
 
     add_common_intro(doc)
+    add_requirements_mapping(doc)
     add_developer_runbook(doc)
     add_user_runbook(doc)
     add_manual_common(doc)
@@ -429,6 +493,7 @@ def build_doc_person_2(path: Path) -> None:
     add_main_mechanism(doc)
     add_plans(doc)
     add_questions_reference(doc)
+    add_questions_answers_appendix(doc)
     doc.save(path)
 
 
