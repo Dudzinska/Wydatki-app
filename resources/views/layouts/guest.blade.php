@@ -24,7 +24,7 @@
 
             <div>
                 <a href="/" class="text-2xl font-black tracking-tight text-indigo-700 dark:text-indigo-300">
-                    Rozliczenia
+                    BillsBuddy
                 </a>
             </div>
 

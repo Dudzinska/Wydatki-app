@@ -8,7 +8,6 @@ use App\Services\BillSplitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class BillItemController extends Controller
 {
@@ -26,10 +25,6 @@ class BillItemController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0.01'],
             'quantity' => ['required', 'integer', 'min:1'],
-            'user_ids' => ['required', 'array', 'min:1'],
-            'user_ids.*' => [
-                Rule::exists('group_user', 'user_id')->where('group_id', $group->id),
-            ],
         ], [
             'name.required' => 'Podaj nazwe pozycji z paragonu.',
             'price.required' => 'Podaj cene pozycji.',
@@ -38,8 +33,6 @@ class BillItemController extends Controller
             'quantity.required' => 'Podaj liczbe sztuk.',
             'quantity.integer' => 'Liczba sztuk musi byc liczba calkowita.',
             'quantity.min' => 'Liczba sztuk musi wynosic co najmniej 1.',
-            'user_ids.required' => 'Wybierz co najmniej jedna osobe do tej pozycji.',
-            'user_ids.*.exists' => 'Pozycje mozna przypisac tylko czlonkom tej grupy.',
         ]);
 
         DB::transaction(function () use ($bill, $group, $validated): void {
@@ -48,8 +41,6 @@ class BillItemController extends Controller
                 'price' => $validated['price'],
                 'quantity' => $validated['quantity'],
             ]);
-
-            $item->users()->syncWithoutDetaching($validated['user_ids']);
 
             $this->billSplitService->recalculateFromItems($bill, $group, (int) $bill->payer_id);
         });

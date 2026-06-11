@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-12 bg-gray-100 min-h-screen dark:bg-gray-950">
+    <div class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             @if(session('success'))
                 <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-200">{{ session('success') }}</div>
@@ -28,7 +28,7 @@
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div class="space-y-6">
-                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="glamour-card rounded-2xl border p-6 shadow-xl">
                         <h2 class="text-lg font-black text-gray-900 dark:text-gray-100">Czlonkowie grupy</h2>
                         <div class="mt-4 space-y-3">
                             @foreach($group->users as $user)
@@ -58,7 +58,6 @@
                     <div class="rounded-2xl bg-gray-950 p-6 text-white shadow-lg">
                         <h2 class="text-lg font-black">Panel rozliczen</h2>
 
-                   
                         <div class="mt-5 space-y-4">
                             @foreach($group->getBalances() as $data)
                                 <div class="border-b border-gray-800 pb-3">
@@ -124,7 +123,7 @@
                 </div>
 
                 <div class="space-y-6 lg:col-span-2">
-                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="glamour-card rounded-2xl border p-6 shadow-xl">
                         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <h2 class="text-lg font-black text-gray-900 dark:text-gray-100">Dodaj wydatek</h2>
@@ -158,7 +157,7 @@
                         </form>
                     </div>
 
-                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="glamour-card rounded-2xl border p-6 shadow-xl">
                         <h2 class="text-lg font-black text-gray-900 dark:text-gray-100">Filtr historii</h2>
                         <form action="{{ route('groups.show', $group) }}" method="GET" class="mt-5 grid gap-4 md:grid-cols-5">
                             <div class="md:col-span-2">
@@ -189,7 +188,7 @@
                         </form>
                     </div>
 
-                    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="glamour-card overflow-hidden rounded-2xl border shadow-xl">
                         <div class="border-b border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-950">
                             <h2 class="text-sm font-black uppercase tracking-widest text-gray-700 dark:text-gray-300">Historia rozliczen</h2>
                         </div>
@@ -240,7 +239,7 @@
                                                     <p class="text-sm text-gray-700 dark:text-gray-300">
                                                         <span class="font-bold">{{ $item->name }}</span>
                                                         ({{ number_format($item->price, 2) }} zl x {{ $item->quantity }})
-                                                        - przypisane: {{ $item->users->pluck('name')->join(', ') ?: 'brak' }}
+                                                        - dzielone po rowno na {{ $group->users->count() }} osoby
                                                     </p>
                                                 @endforeach
                                             </div>
@@ -252,7 +251,7 @@
                                     @endphp
                                     <details class="mt-4 rounded-xl border border-gray-200 p-4 dark:border-gray-800" @if($isOldBillItem) open @endif>
                                         <summary class="cursor-pointer text-sm font-black text-indigo-700 dark:text-indigo-300">Dodaj pozycje z paragonu</summary>
-                                        <form action="{{ route('bill-items.store', [$group, $bill]) }}" method="POST" class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                                        <form action="{{ route('bill-items.store', [$group, $bill]) }}" method="POST" class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
                                             @csrf
                                             <input type="hidden" name="bill_item_bill_id" value="{{ $bill->id }}">
                                             <div>
@@ -276,22 +275,10 @@
                                                     <x-input-error :messages="$errors->get('quantity')" class="mt-2" />
                                                 @endif
                                             </div>
-                                            <div>
-                                                <p class="text-sm font-bold text-gray-700 dark:text-gray-200">Przypisz do</p>
-                                                <div class="mt-2 flex flex-wrap gap-3">
-                                                    @foreach($group->users as $user)
-                                                        <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
-                                                            <input type="checkbox" name="user_ids[]" value="{{ $user->id }}" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" @checked($isOldBillItem && in_array($user->id, old('user_ids', [])))>
-                                                            <span>{{ $user->name }}</span>
-                                                        </label>
-                                                    @endforeach
-                                                </div>
-                                                @if($isOldBillItem)
-                                                    <x-input-error :messages="$errors->get('user_ids')" class="mt-2" />
-                                                    <x-input-error :messages="$errors->get('user_ids.*')" class="mt-2" />
-                                                @endif
+                                            <div class="md:col-span-3 rounded-xl bg-indigo-50 p-3 text-xs font-semibold text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200">
+                                                Pozycja zostanie automatycznie podzielona po rowno na wszystkich czlonkow grupy.
                                             </div>
-                                            <button class="rounded-xl bg-indigo-600 px-4 py-3 text-sm font-black text-white hover:bg-indigo-700 md:col-span-2 dark:bg-indigo-500 dark:text-gray-950 dark:hover:bg-indigo-400">Dodaj pozycje</button>
+                                            <button class="rounded-xl bg-indigo-600 px-4 py-3 text-sm font-black text-white hover:bg-indigo-700 md:col-span-3 dark:bg-indigo-500 dark:text-gray-950 dark:hover:bg-indigo-400">Dodaj pozycje</button>
                                         </form>
                                     </details>
                                 </div>

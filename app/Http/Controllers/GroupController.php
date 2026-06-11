@@ -78,7 +78,7 @@ class GroupController extends Controller
         $group->load(['owner', 'users', 'bills.splits.user']);
 
         $bills = $group->bills()
-            ->with(['payer', 'items.users', 'splits.user'])
+            ->with(['payer', 'items', 'splits.user'])
             ->when($filters['bill_search'] ?? null, function ($query, string $search) {
                 $query->where('description', 'like', "%{$search}%");
             })

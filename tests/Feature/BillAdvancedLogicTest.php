@@ -41,14 +41,13 @@ class BillAdvancedLogicTest extends TestCase
                 'name' => 'Danie glowne',
                 'price' => 100,
                 'quantity' => 1,
-                'user_ids' => [$friend->id],
             ])->assertRedirect();
 
         $friendShare = (float) $bill->splits()->where('user_id', $friend->id)->value('amount');
         $ownerShare = (float) $bill->splits()->where('user_id', $owner->id)->value('amount');
 
-        $this->assertEquals(100.0, $friendShare);
-        $this->assertEquals(0.0, $ownerShare);
+        $this->assertEquals(50.0, $friendShare);
+        $this->assertEquals(50.0, $ownerShare);
     }
 
     public function test_group_can_generate_minimal_settlement_plan_from_items(): void
@@ -76,7 +75,6 @@ class BillAdvancedLogicTest extends TestCase
             'name' => 'Pozycja 1',
             'price' => 30,
             'quantity' => 1,
-            'user_ids' => [$debtorOne->id],
         ])->assertRedirect();
 
         $this->actingAs($owner)->post(route('bill-items.store', [$group, $bill]), [
@@ -84,7 +82,6 @@ class BillAdvancedLogicTest extends TestCase
             'name' => 'Pozycja 2',
             'price' => 60,
             'quantity' => 1,
-            'user_ids' => [$debtorTwo->id],
         ])->assertRedirect();
 
         $plan = $group->fresh()->getSettlementPlan();
@@ -92,7 +89,7 @@ class BillAdvancedLogicTest extends TestCase
         $this->assertCount(2, $plan);
         $this->assertSame($owner->id, $plan[0]['to']->id);
         $this->assertSame($owner->id, $plan[1]['to']->id);
-        $this->assertEquals(60.00, $plan[0]['amount']);
+        $this->assertEquals(30.00, $plan[0]['amount']);
         $this->assertEquals(30.00, $plan[1]['amount']);
     }
 }

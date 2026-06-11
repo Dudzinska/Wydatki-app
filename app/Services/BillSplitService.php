@@ -25,7 +25,7 @@ class BillSplitService
 
     public function recalculateFromItems(Bill $bill, Group $group, int $payerId): bool
     {
-        $bill->loadMissing('items.users');
+        $bill->loadMissing('items');
 
         if ($bill->items->isEmpty()) {
             return false;
@@ -45,17 +45,8 @@ class BillSplitService
                 continue;
             }
 
-            $assignedIds = $item->users
-                ->pluck('id')
-                ->intersect($groupUserIds)
-                ->values();
-
-            if ($assignedIds->isEmpty()) {
-                continue;
-            }
-
             $itemsTotalCents += $itemTotalCents;
-            $distributed = $this->distributeEvenly($itemTotalCents, $assignedIds);
+            $distributed = $this->distributeEvenly($itemTotalCents, $groupUserIds);
 
             foreach ($distributed as $userId => $shareCents) {
                 $rawShares[$userId] += $shareCents;

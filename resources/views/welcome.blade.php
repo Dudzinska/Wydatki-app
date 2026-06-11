@@ -18,7 +18,7 @@
             <header class="glamour-card border-b border-fuchsia-100/70 dark:border-fuchsia-950/50">
                 <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
                     <a href="{{ route('home') }}" class="text-xl font-black tracking-tight text-fuchsia-700 dark:text-fuchsia-300">
-                        Rozliczanie wydatkow
+                        BillsBuddy
                     </a>
 
                     <div class="flex flex-wrap items-center gap-3">
@@ -102,7 +102,7 @@
                     <div class="glamour-card rounded-2xl border p-6">
                         <h2 class="text-lg font-black text-slate-900 dark:text-slate-100">Precyzyjny podzial kosztow</h2>
                         <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                            Podzial kosztu jest przeliczany automatycznie po dodaniu pozycji paragonu przypisanych do konkretnych osob.
+                            Pozycje z paragonu sa automatycznie dzielone po rowno na wszystkich czlonkow grupy.
                         </p>
                     </div>
                 </section>

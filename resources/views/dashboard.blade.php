@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
             <section class="glamour-hero rounded-3xl p-8 text-white shadow-2xl sm:p-10">
-                <p class="text-sm font-black uppercase tracking-[0.22em] text-fuchsia-100">Rozliczanie wydatkow</p>
+                <p class="text-sm font-black uppercase tracking-[0.22em] text-fuchsia-100">BillsBuddy</p>
                 <h1 class="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
                     Zarządzaj grupami i wspólnymi rachunkami.
                 </h1>

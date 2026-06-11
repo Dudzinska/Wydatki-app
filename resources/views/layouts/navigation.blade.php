@@ -3,7 +3,7 @@
         <div class="flex justify-between h-16">
             <div class="flex items-center">
                 <a href="{{ route('dashboard') }}" class="text-lg font-black tracking-tight text-indigo-700 dark:text-indigo-300">
-                    Rozliczenia
+                    BillsBuddy
                 </a>
 
                 <div class="hidden space-x-8 sm:ms-10 sm:flex">
