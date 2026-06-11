@@ -125,7 +125,6 @@ class BillAdvancedLogicTest extends TestCase
         $this->assertEquals(117.0, $friendShare);
         $this->assertEquals(117.0, $ownerShare);
     }
-
     public function test_bill_without_items_is_split_equally_between_members(): void
     {
         $payer = User::factory()->create();
