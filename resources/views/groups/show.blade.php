@@ -209,16 +209,28 @@
                                         </form>
                                     </div>
 
-                                    @if($bill->splits->isNotEmpty())
-                                        <div class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-700 dark:bg-gray-950 dark:text-gray-300">
-                                            <p class="font-black">Podzial kosztu:</p>
-                                            <p class="mt-1">
-                                                @foreach($bill->splits as $split)
-                                                    {{ $split->user->name }}: {{ number_format($split->amount, 2) }} zl{{ !$loop->last ? ', ' : '' }}
+                                    @php
+                                        $debtors = $bill->splits->filter(fn ($split) => $split->user_id !== $bill->payer_id && $split->amount > 0);
+                                    @endphp
+
+                                    <div class="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-700 dark:bg-gray-950 dark:text-gray-300">
+                                        <p class="font-black">Kto ile oddaje:</p>
+                                        @if($debtors->isNotEmpty())
+                                            <div class="mt-1 space-y-1">
+                                                @foreach($debtors as $split)
+                                                    <p>
+                                                        <span class="font-bold">{{ $split->user->name }}</span>
+                                                        oddaje
+                                                        <span class="font-bold text-fuchsia-700 dark:text-fuchsia-300">{{ number_format($split->amount, 2) }} PLN</span>
+                                                        dla
+                                                        <span class="font-bold">{{ $bill->payer->name }}</span>.
+                                                    </p>
                                                 @endforeach
-                                            </p>
-                                        </div>
-                                    @endif
+                                            </div>
+                                        @else
+                                            <p class="mt-1">Ten wydatek pokryl tylko {{ $bill->payer->name }}.</p>
+                                        @endif
+                                    </div>
 
                                     @if($bill->items->isNotEmpty())
                                         <div class="mt-4 rounded-xl border border-indigo-100 p-4 dark:border-indigo-900">
@@ -240,9 +252,6 @@
                                     @endphp
                                     <details class="mt-4 rounded-xl border border-gray-200 p-4 dark:border-gray-800" @if($isOldBillItem) open @endif>
                                         <summary class="cursor-pointer text-sm font-black text-indigo-700 dark:text-indigo-300">Dodaj pozycje z paragonu</summary>
-                                        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                                            Po zapisaniu pozycji system automatycznie przeliczy podzial kosztu tego rachunku.
-                                        </p>
                                         <form action="{{ route('bill-items.store', [$group, $bill]) }}" method="POST" class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                                             @csrf
                                             <input type="hidden" name="bill_item_bill_id" value="{{ $bill->id }}">

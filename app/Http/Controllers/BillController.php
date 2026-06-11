@@ -53,7 +53,7 @@ class BillController extends Controller
                 'date' => now(),
             ]);
 
-            $this->billSplitService->createInitialEqualSplits($bill, $group, (int) $validated['payer_id']);
+            $this->billSplitService->createInitialPayerSplit($bill, $group, (int) $validated['payer_id']);
 
             if (DB::getDriverName() !== 'mysql') {
                 $group->increment('total_amount', $validated['amount']);

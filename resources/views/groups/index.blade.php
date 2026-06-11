@@ -46,19 +46,19 @@
 
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
                     <h2 class="text-lg font-black text-gray-900 dark:text-gray-100">Wyszukiwarka i filtry</h2>
-                    <form action="{{ route('groups.index') }}" method="GET" class="mt-5 grid gap-4 md:grid-cols-4">
-                        <div class="{{ auth()->user()->isAdmin() ? 'md:col-span-2' : 'md:col-span-3' }}">
+                    <form action="{{ route('groups.index') }}" method="GET" class="mt-5 grid gap-4 md:grid-cols-12 md:items-end">
+                        <div class="{{ auth()->user()->isAdmin() ? 'md:col-span-5' : 'md:col-span-8' }}">
                             <label for="search" class="whitespace-nowrap text-sm font-bold text-gray-700 dark:text-gray-200">Szukaj po nazwie lub opisie</label>
                             <input id="search" type="search" name="search" value="{{ $filters['search'] ?? '' }}" class="mt-1 w-full rounded-xl border-gray-300 bg-white text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                         </div>
                         @if(auth()->user()->isAdmin())
-                            <div>
+                            <div class="md:col-span-3">
                                 <label for="owner" class="text-sm font-bold text-gray-700 dark:text-gray-200">Wlasciciel</label>
                                 <input id="owner" type="search" name="owner" value="{{ $filters['owner'] ?? '' }}" class="mt-1 w-full rounded-xl border-gray-300 bg-white text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100">
                             </div>
                         @endif
-                        <div class="flex items-end gap-2">
-                            <button type="submit" class="w-full rounded-xl bg-gray-900 px-5 py-3 text-sm font-black text-white hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+                        <div class="{{ auth()->user()->isAdmin() ? 'md:col-span-4' : 'md:col-span-4' }} flex flex-wrap gap-2 md:flex-nowrap md:justify-end">
+                            <button type="submit" class="rounded-xl bg-gray-900 px-5 py-3 text-sm font-black text-white hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
                                 Filtruj
                             </button>
                             <a href="{{ route('groups.index') }}" class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-black text-gray-700 hover:border-indigo-400 hover:text-indigo-700 dark:border-gray-700 dark:text-gray-200 dark:hover:border-indigo-500 dark:hover:text-indigo-300">
@@ -66,10 +66,6 @@
                             </a>
                         </div>
                     </form>
-
-                    <div class="mt-6 rounded-xl bg-indigo-50 p-4 text-sm leading-6 text-indigo-900 dark:bg-indigo-950 dark:text-indigo-200">
-                        Jesli formularz nie przejdzie walidacji, zobaczysz tekstowy komunikat pod polem, a poprzednio wpisane dane zostana w formularzu.
-                    </div>
                 </div>
             </div>
 

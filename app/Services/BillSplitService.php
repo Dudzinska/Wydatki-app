@@ -8,14 +8,18 @@ use Illuminate\Support\Collection;
 
 class BillSplitService
 {
-    public function createInitialEqualSplits(Bill $bill, Group $group, int $payerId): void
+    public function createInitialPayerSplit(Bill $bill, Group $group, int $payerId): void
     {
         $memberIds = $group->users()->pluck('users.id')->values();
         if ($memberIds->isEmpty()) {
             return;
         }
 
-        $shares = $this->distributeEvenly($this->toCents((float) $bill->amount), $memberIds);
+        $shares = $memberIds->mapWithKeys(fn (int $userId): array => [$userId => 0]);
+        if (isset($shares[$payerId])) {
+            $shares[$payerId] = $this->toCents((float) $bill->amount);
+        }
+
         $this->persistSplits($bill, $shares, $payerId);
     }
 
@@ -63,9 +67,14 @@ class BillSplitService
         }
 
         $billTotalCents = $this->toCents((float) $bill->amount);
-        $normalizedShares = $this->normalizeToTotal($rawShares, $billTotalCents, $itemsTotalCents, $groupUserIds);
+        if ($itemsTotalCents <= $billTotalCents) {
+            $rawShares[$payerId] += $billTotalCents - $itemsTotalCents;
+            $finalShares = $rawShares;
+        } else {
+            $finalShares = $this->normalizeToTotal($rawShares, $billTotalCents, $itemsTotalCents, $groupUserIds);
+        }
 
-        $this->persistSplits($bill, $normalizedShares, $payerId);
+        $this->persistSplits($bill, $finalShares, $payerId);
 
         return true;
     }
