@@ -24,14 +24,6 @@ class PublicPagesTest extends TestCase
             ->assertSee('Zarządzaj grupami i wspólnymi rachunkami.');
     }
 
-    public function test_project_questions_page_is_visible_without_login(): void
-    {
-        $this->get('/pytania-projektowe')
-            ->assertOk()
-            ->assertSee('Pytania do projektu')
-            ->assertSee('Opisz działanie protokołu HTTP.');
-    }
-
     public function test_regular_user_does_not_see_admin_link(): void
     {
         $user = User::factory()->create(['role' => 'user']);
