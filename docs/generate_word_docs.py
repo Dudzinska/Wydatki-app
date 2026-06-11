@@ -394,6 +394,6 @@ def build_doc_person_2(path: Path) -> None:
 
 
 if __name__ == "__main__":
-    build_doc_person_1(Path("/workspace/docs/Dokumentacja_BillsBuddy_Osoba_1.docx"))
-    build_doc_person_2(Path("/workspace/docs/Dokumentacja_BillsBuddy_Osoba_2.docx"))
+    build_doc_person_1(Path("/workspace/docs/Dokumentacja_BillsBuddy_Oliwia_Kwasek.docx"))
+    build_doc_person_2(Path("/workspace/docs/Dokumentacja_BillsBuddy_Klaudia_Dudzinska.docx"))
     print("Wygenerowano obie dokumentacje DOCX.")
