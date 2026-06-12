@@ -4,15 +4,16 @@
 
 Przedmiot: Aplikacje internetowe
 
-Autor: [Imię i nazwisko]
+Projekt grupowy — 2 osoby
 
-Nr indeksu: [Nr indeksu]
+- **Osoba 1:** [Imię i nazwisko], nr indeksu [Nr indeksu] — moduł „Konta, grupy i administracja"
+- **Osoba 2:** [Imię i nazwisko], nr indeksu [Nr indeksu] — moduł „Rachunki i rozliczenia"
 
-Projekt grupowy
-
-Zakres dokumentacji: moduły autora (backend, baza danych, logika biznesowa, wybrane elementy frontendu)
+Zakres dokumentacji: backend, baza danych, logika biznesowa oraz wybrane elementy frontendu, z wyraźnym oznaczeniem wkładu każdej z dwóch osób.
 
 Data: czerwiec 2026
+
+> **Legenda oznaczeń wkładu:** przy każdej sekcji w nawiasie podano osobę odpowiedzialną — **(Osoba 1)**, **(Osoba 2)** lub **(Osoba 1 + Osoba 2)** dla części wspólnych.
 
 ---
 
@@ -36,22 +37,44 @@ W odróżnieniu od zwykłego arkusza kalkulacyjnego BillsBuddy:
 - rozdziela **role admin/user** oraz chroni zasoby kontrolą dostępu,
 - ma responsywny interfejs z motywem jasnym/ciemnym (Tailwind CSS + Alpine.js).
 
-### 1.2. Zakres odpowiedzialności autora dokumentacji
+### 1.2. Podział pracy w zespole (2 osoby)
 
-Dokument opisuje moduły zaimplementowane głównie przez autora tej dokumentacji w ramach pracy grupowej (backend Laravel, baza danych, logika serwera, formularze i interakcje frontendowe powiązane z poniższymi funkcjami):
+Projekt powstał w dwuosobowym zespole. Praca została podzielona według obszarów funkcjonalnych:
 
-- CRUD grup rozliczeniowych (tworzenie, lista, edycja, usuwanie) z walidacją po stronie serwera i klienta.
-- Dodawanie rachunków i pozycji z paragonu wraz z walidacją kwot.
-- Algorytm planu rozliczeń minimalizujący liczbę przelewów (`Group::getSettlementPlan()`).
-- Automatyczne dzielenie kosztów (po równo oraz na podstawie pozycji paragonu) — `BillSplitService`.
-- Statystyki wydatków grupy (bieżący miesiąc, ostatnie 30 dni, najwyższy/średni rachunek).
+| Obszar | Osoba 1 — Konta, grupy i administracja | Osoba 2 — Rachunki i rozliczenia |
+|--------|----------------------------------------|----------------------------------|
+| Backend (kontrolery) | `GroupController`, `PublicGroupController`, `Admin\UserController`, `ProfileController` | `BillController`, `BillItemController`, `BillSplitService` |
+| Modele | `User`, `Group` (relacje i dostęp) | `Bill`, `BillItem`, `BillSplit`, metody salda/planu w `Group` |
+| Logika biznesowa | role i kontrola dostępu, publiczny katalog z filtrami i sortowaniem | automatyczny podział kosztów, plan rozliczeń, statystyki wydatków |
+| Baza danych (tabele) | `users`, `groups`, `group_user` | `bills`, `bill_items`, `bill_item_user`, `bill_splits` |
+| Baza danych (MySQL) | — | triggery salda grupy + funkcja `get_user_net_balance()` |
+| Frontend (widoki) | logowanie/rejestracja, lista i formularze grup, katalog, panel admina | strona grupy (rachunki, salda, plan rozliczeń, statystyki), formularze rachunków i pozycji |
+| Wspólne | layout, motyw jasny/ciemny, nawigacja, strona główna, seeder danych testowych | jw. |
+
+#### 1.2.1. Zakres Osoby 1 — Konta, grupy i administracja
+
+- Uwierzytelnianie i role użytkowników (Laravel Breeze, kolumna `role`, `AdminMiddleware`).
+- CRUD grup rozliczeniowych (tworzenie, lista, edycja, usuwanie) z walidacją po stronie serwera i klienta oraz unikalnością nazwy.
+- Kontrola dostępu do grup (członek/właściciel/admin).
 - Publiczny katalog grup z filtrowaniem i sortowaniem.
 - Panel administratora: zarządzanie kontami i rolami użytkowników.
+
+#### 1.2.2. Zakres Osoby 2 — Rachunki i rozliczenia
+
+- Dodawanie i usuwanie rachunków oraz pozycji z paragonu wraz z walidacją kwot.
+- Automatyczne dzielenie kosztów (po równo oraz na podstawie pozycji paragonu) — `BillSplitService`.
+- Algorytm planu rozliczeń minimalizujący liczbę przelewów (`Group::getSettlementPlan()`).
+- Statystyki wydatków grupy (bieżący miesiąc, ostatnie 30 dni, najwyższy/średni rachunek).
+- Automatyczne saldo grupy (triggery MySQL / logika PHP na SQLite) oraz funkcja SQL `get_user_net_balance()`.
+
+#### 1.2.3. Część wspólna (Osoba 1 + Osoba 2)
+
+- Layout aplikacji, nawigacja, motyw jasny/ciemny, strona główna z licznikami.
 - Seeder danych testowych (użytkownicy, grupa, rachunek, podział kosztów).
 
 ---
 
-## 2. Uruchomienie projektu (developer)
+## 2. Uruchomienie projektu (developer) — (Osoba 1 + Osoba 2)
 
 ### 2.1. Użyte technologie
 
@@ -128,7 +151,7 @@ Alternatywnie osobno:
 
 ---
 
-## 3. Uruchomienie projektu (użytkownik końcowy)
+## 3. Uruchomienie projektu (użytkownik końcowy) — (Osoba 1 + Osoba 2)
 
 Aplikacja jest webowa — użytkownik końcowy nie instaluje kodu. W środowisku produkcyjnym wystarczy adres URL opublikowanej aplikacji. W wersji lokalnej/demonstracyjnej: http://127.0.0.1:8000.
 
@@ -141,13 +164,13 @@ Wymagania sprzętowe:
 
 ## 4. Podręcznik użytkownika
 
-### 4.1. Strona główna i logowanie
+### 4.1. Strona główna i logowanie — (Osoba 1)
 
 Strona startowa (`/`) prezentuje krótki opis aplikacji oraz liczniki (liczba grup, użytkowników i rachunków). Gość może się zalogować lub zarejestrować. Po zalogowaniu użytkownik trafia do panelu (`/dashboard`) i ma dostęp do swoich grup oraz publicznego katalogu.
 
 > [Miejsce na Rys. 1] — Strona główna z opisem aplikacji i licznikami.
 
-### 4.2. Moje grupy — lista (READ)
+### 4.2. Moje grupy — lista (READ) — (Osoba 1)
 
 Ścieżka: **Moje grupy** → `/groups`
 
@@ -158,7 +181,7 @@ Strona startowa (`/`) prezentuje krótki opis aplikacji oraz liczniki (liczba gr
 
 > [Miejsce na Rys. 2] — Lista grup z wyszukiwarką.
 
-### 4.3. Tworzenie grupy (CREATE — użytkownik zalogowany)
+### 4.3. Tworzenie grupy (CREATE — użytkownik zalogowany) — (Osoba 1)
 
 Ścieżka: formularz na liście grup → `POST /groups`
 
@@ -172,7 +195,7 @@ Walidacja po stronie serwera (Laravel): `required`, `unique:groups,name`, `max` 
 
 > [Miejsce na Rys. 3] — Formularz tworzenia grupy.
 
-### 4.4. Szczegóły grupy — rachunki, salda i rozliczenia (READ)
+### 4.4. Szczegóły grupy — rachunki, salda i rozliczenia (READ) — (Osoba 2)
 
 Ścieżka: karta grupy → `/groups/{id}`
 
@@ -188,7 +211,7 @@ Dostęp ma tylko członek grupy lub administrator (w przeciwnym razie HTTP 403).
 
 > [Miejsce na Rys. 4] — Strona grupy: rachunki, salda i plan rozliczeń.
 
-### 4.5. Dodawanie rachunku i pozycji z paragonu
+### 4.5. Dodawanie rachunku i pozycji z paragonu — (Osoba 2)
 
 **Dodanie rachunku** (`POST /groups/{group}/bills`):
 - Opis wydatku (wymagany, max 255 znaków; nie może składać się z samych cyfr).
@@ -203,13 +226,13 @@ Po zapisaniu rachunku koszt jest **automatycznie dzielony po równo** między ws
 
 > [Miejsce na Rys. 5] — Formularz dodawania rachunku / pozycji z paragonu.
 
-### 4.6. Edycja i usuwanie grupy (UPDATE / DELETE)
+### 4.6. Edycja i usuwanie grupy (UPDATE / DELETE) — (Osoba 1)
 
 - Edycja grupy (`/groups/{id}/edit`) — dostępna dla właściciela lub administratora; zmienia nazwę i opis (z walidacją unikalności).
 - Usunięcie grupy (`DELETE /groups/{id}`) — dostępne dla właściciela lub administratora; kasuje grupę wraz z powiązanymi rachunkami (kaskadowo).
 - Usunięcie rachunku (`DELETE /groups/{group}/bills/{bill}`) — dostępne dla członków grupy.
 
-### 4.7. Publiczny katalog grup
+### 4.7. Publiczny katalog grup — (Osoba 1)
 
 Ścieżka: **Katalog grup** → `/katalog-grup`
 
@@ -222,14 +245,14 @@ Widok szczegółów katalogu (`/katalog-grup/{group}`) prezentuje salda i plan r
 
 > [Miejsce na Rys. 6] — Publiczny katalog grup z filtrami i sortowaniem.
 
-### 4.8. Role w systemie
+### 4.8. Role w systemie — (Osoba 1)
 
 | Rola | Możliwości |
 |------|------------|
 | Użytkownik | Tworzenie grup, dodawanie rachunków i pozycji, zarządzanie własnymi grupami, podgląd sald, planu rozliczeń i statystyk, przeglądanie katalogu. |
 | Administrator | Wszystko co użytkownik + dostęp do wszystkich grup, panel administratora (zarządzanie kontami i rolami). |
 
-### 4.9. Przypadki brzegowe (walidacja)
+### 4.9. Przypadki brzegowe (walidacja) — (Osoba 1 + Osoba 2)
 
 - Kwota ujemna lub zero — odrzucana regułą `min:0.01`.
 - Pusty opis rachunku — błąd „Podaj nazwę wydatku".
@@ -240,7 +263,7 @@ Widok szczegółów katalogu (`/katalog-grup/{group}`) prezentuje salda i plan r
 - Próba edycji/usunięcia cudzej grupy — HTTP 403 (`authorizeGroupOwnerOrAdmin`).
 - Administrator nie może odebrać sobie roli admina ani usunąć własnego konta.
 
-### 4.10. Responsywność
+### 4.10. Responsywność — (Osoba 1 + Osoba 2)
 
 Layout wykorzystuje Tailwind CSS (breakpointy `sm`, `md`, `lg`). Karty grup wyświetlają się w siatce 1/2/3 kolumn zależnie od szerokości ekranu, a formularze przechodzą z układu wielokolumnowego na jednokolumnowy na wąskich ekranach. Dostępny jest przełącznik motywu jasny/ciemny (Alpine.js + localStorage).
 
@@ -248,7 +271,7 @@ Layout wykorzystuje Tailwind CSS (breakpointy `sm`, `md`, `lg`). Karty grup wyś
 
 ---
 
-## 5. Udokumentowany CRUD — zasób Grupa (Group)
+## 5. Udokumentowany CRUD — zasób Grupa (Group) — (Osoba 1)
 
 Relacje: `User belongsToMany Group` (przez tabelę `group_user`) oraz `User hasMany Group` jako właściciel (`owner_id`). Dodatkowo `Group hasMany Bill`, a `Bill hasMany BillItem` oraz `Bill hasMany BillSplit`.
 
@@ -276,7 +299,7 @@ Edycja używa tej samej reguły unikalności nazwy co CREATE, z wyłączeniem bi
 
 ---
 
-## 6. Role, uprawnienia i zarządzanie
+## 6. Role, uprawnienia i zarządzanie — (Osoba 1)
 
 ### 6.1. Role użytkowników
 
@@ -303,7 +326,7 @@ Zabezpieczenia: admin nie może odebrać sobie roli admina ani usunąć własneg
 
 ---
 
-## 7. Logika biznesowa wykraczająca poza prosty CRUD
+## 7. Logika biznesowa wykraczająca poza prosty CRUD — (Osoba 2)
 
 ### 7.1. Plan rozliczeń minimalizujący liczbę przelewów
 
@@ -328,21 +351,23 @@ Na MySQL trigger `validate_user_in_group_before_item_assign` blokuje przypisanie
 
 ---
 
-## 8. Przechowywane dane (moduły autora)
+## 8. Przechowywane dane — (Osoba 1 + Osoba 2)
 
-| Tabela | Kluczowe pola | Opis |
-|--------|---------------|------|
-| `users` | name, email, password, role | Konta użytkowników i ich role |
-| `groups` | name, description, owner_id, total_amount | Grupy rozliczeniowe (nazwa unikalna) |
-| `group_user` | group_id, user_id | Członkostwo w grupach (para unikalna) |
-| `bills` | group_id, payer_id, description, amount, date | Rachunki (kto zapłacił i ile) |
-| `bill_items` | bill_id, name, price, quantity | Pozycje z paragonu |
-| `bill_item_user` | bill_item_id, user_id | Przypisanie pozycji do osób |
-| `bill_splits` | bill_id, user_id, amount, is_paid | Podział kosztu rachunku na osoby |
+W kolumnie „Autor" oznaczono osobę odpowiedzialną za daną tabelę.
+
+| Tabela | Kluczowe pola | Opis | Autor |
+|--------|---------------|------|-------|
+| `users` | name, email, password, role | Konta użytkowników i ich role | Osoba 1 |
+| `groups` | name, description, owner_id, total_amount | Grupy rozliczeniowe (nazwa unikalna) | Osoba 1 |
+| `group_user` | group_id, user_id | Członkostwo w grupach (para unikalna) | Osoba 1 |
+| `bills` | group_id, payer_id, description, amount, date | Rachunki (kto zapłacił i ile) | Osoba 2 |
+| `bill_items` | bill_id, name, price, quantity | Pozycje z paragonu | Osoba 2 |
+| `bill_item_user` | bill_item_id, user_id | Przypisanie pozycji do osób | Osoba 2 |
+| `bill_splits` | bill_id, user_id, amount, is_paid | Podział kosztu rachunku na osoby | Osoba 2 |
 
 ---
 
-## 9. Plany rozbudowy (v2.0)
+## 9. Plany rozbudowy (v2.0) — (Osoba 1 + Osoba 2)
 
 ### 9.1. Czego brakuje w v1.0
 
